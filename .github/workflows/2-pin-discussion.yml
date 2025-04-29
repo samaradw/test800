@@ -1,0 +1,13 @@
+name: Step 2 - Detect Discussion Pinning
+
+on:
+  discussion:
+    types: [edited]
+
+jobs:
+  proceed-to-step3:
+    if: github.event.discussion.pinned == true && github.event.discussion.title == 'Skill Practice: Pinning Discussions'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Move to Step 3
+        run: gh-actions-importer move-to-step step3

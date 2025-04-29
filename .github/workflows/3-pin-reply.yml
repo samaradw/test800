@@ -1,0 +1,13 @@
+name: Step 3 - Detect Answer Pinning
+
+on:
+  discussion_comment:
+    types: [created, edited]
+
+jobs:
+  proceed-to-finish:
+    if: github.event.discussion_comment.is_answered == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Move to Finish
+        run: gh-actions-importer move-to-step finish

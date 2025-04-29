@@ -1,0 +1,81 @@
+name: Step 0, Welcome
+
+# This step triggers after the learner creates a new repository from the template.
+# This workflow updates from step 0 to step 1.
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  get_current_step:
+    name: Check current step number
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - id: get_step
+        run: |
+          echo "current_step=$(cat ./.github/steps/-step.txt)" >> $GITHUB_OUTPUT
+    outputs:
+      current_step: ${{ steps.get_step.outputs.current_step }}
+
+  on_start:
+    name: On start
+    needs: get_current_step
+    if: >-
+      ${{ !github.event.repository.is_template
+          && needs.get_current_step.outputs.current_step == 0 }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Prepare a branch and simple commit
+      - name: Prepare a branch and pull request
+        run: |
+          echo "Ensure we are on step 0"
+          if [ "$(cat .github/steps/-step.txt)" != 0 ]
+          then
+            echo "Current step is not 0"
+            exit 0
+          fi
+
+          echo "Create a new branch"
+          BRANCH=update-intro-discussions
+          git checkout -b $BRANCH
+
+          echo "Create a placeholder file for the course"
+          echo "<!-- Welcome to Introduction to Discussions Skill -->" > intro.txt
+
+          echo "Commit the new file"
+          git config user.name github-actions[bot]
+          git config user.email github-actions[bot]@users.noreply.github.com
+          git add intro.txt
+          git commit --message="Start Introduction to Discussions course"
+
+          echo "Push the branch"
+          git push --set-upstream origin $BRANCH
+
+          echo "Switch back to main branch"
+          git checkout main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Update to step 1
+      - name: Update to Step 1
+        uses: skills/action-update-step@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          from_step: 0
+          to_step: 1
+          branch_name: update-intro-discussions

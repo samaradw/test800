@@ -1,0 +1,13 @@
+name: Step 1 - Detect Discussion Creation
+
+on:
+  discussion:
+    types: [created]
+
+jobs:
+  proceed-to-step2:
+    if: github.event.discussion.title == 'Skill Practice: Pinning Discussions'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Move to Step 2
+        run: gh-actions-importer move-to-step step2

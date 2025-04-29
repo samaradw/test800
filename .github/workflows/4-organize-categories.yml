@@ -1,0 +1,45 @@
+name: Step 5, Organize with Categories
+
+# This step triggers when a discussion is edited (e.g., category changed).
+# This workflow updates from step 5 to step 6.
+
+on:
+  discussion:
+    types: [edited]
+
+permissions:
+  contents: write
+
+jobs:
+  get_current_step:
+    name: Check current step number
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - id: get_step
+        run: |
+          echo "current_step=$(cat .github/steps/-step.txt)" >> $GITHUB_OUTPUT
+    outputs:
+      current_step: ${{ steps.get_step.outputs.current_step }}
+
+  on_category_edit:
+    name: Proceed to Finish
+    needs: get_current_step
+
+    # Only run this if we are on step 5
+    if: >-
+      ${{ needs.get_current_step.outputs.current_step == 5 }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Update to finish
+        uses: skills/action-update-step@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          from_step: 5
+          to_step: 6
+          branch_name: main
