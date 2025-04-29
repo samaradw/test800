@@ -6,8 +6,6 @@ _Learn how to enable, organize, and engage with GitHub Discussions._
 
 </header>
 
----
-
 ## Welcome
 
 GitHub Discussions creates a space where your community can ask questions, share ideas, and collaborate in an open, organized way. By enabling Discussions, you turn your repository into a vibrant workspace where collaboration happens transparently. In this course, you'll practice setting up Discussions and managing conversations effectively.
